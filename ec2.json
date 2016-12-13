@@ -52,13 +52,14 @@
         }],
           "UserData" : { "Fn::Base64" : {"Fn::Join" : ["", [
       "#!/bin/bash \n",
-      "sudo yum install httpd -y \n",
-      "sudo service httpd start \n",
+      "sudo yum install httpd -y ",
+      "sudo service httpd start ,
       "cd /var/www/html \n",
-      "sudo wget http://conteudo.concretesolutions.com.br/devops-on-beer-sp-1312 \n",
-      "nome=`sudo ls` \n",
-      "sudo mv $nome index.html \n",
-      "sudo chmod 755 index.html \n"
+      "sudo wget http://conteudo.concretesolutions.com.br/devops-on-beer-sp-1312 ",
+      "nome=`sudo ls` ",
+      "sudo mv $nome index.html ",
+      "sudo chmod 755 index.html ",
+            "\n"
     ]]}}
       }
     }
