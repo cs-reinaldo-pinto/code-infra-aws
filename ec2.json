@@ -1,0 +1,84 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "Template to launch an Amazon Linux instance.",
+
+  "Parameters": {
+    "KeyName": {
+      "Type": "String",
+      "Default": "reinaldosouza"
+    },
+
+    "SecurityGroup": {
+    "Type": "String",
+    "Default" : "sg-5099bc2d"
+    },
+    "SubnetId": {
+    "Type": "String",
+    "Default": "subnet-7e64f553"
+
+    }
+  },
+  "Mappings" :
+    {
+    "RegionMap" : {
+      "us-east-1"      : { "AMI" : "ami-05355a6c" },
+      "us-west-2"      : { "AMI" : "ami-0358ce33" },
+      "us-west-1"      : { "AMI" : "ami-3ffed17a" },
+      "eu-west-1"      : { "AMI" : "ami-c7c0d6b3" },
+      "ap-southeast-1" : { "AMI" : "ami-fade91a8" },
+      "ap-southeast-2" : { "AMI" : "ami-d16bfbeb" },
+      "ap-northeast-1" : { "AMI" : "ami-39b23d38" },
+      "sa-east-1"      : { "AMI" : "ami-5253894f" }
+    }
+  },
+
+  "Resources" :
+  {
+    "Ec2Instance" :
+    {
+      "Type" : "AWS::EC2::Instance",
+      "Properties" :
+      {
+        "ImageId" : { "Fn::FindInMap" : [ "RegionMap", { "Ref" : "AWS::Region" }, "AMI" ]},
+        "KeyName": { "Ref": "KeyName" },
+        "InstanceType" : "m1.small",
+        "NetworkInterfaces" : [{
+          "GroupSet"                 : [{ "Ref" : "SecurityGroup" }],
+          "DeviceIndex"              : "0",
+          "DeleteOnTermination"      : "true",
+          "SubnetId"                 : { "Ref" : "SubnetId" },
+          "DeleteOnTermination": "true",
+           "AssociatePublicIpAddress": "true"
+        }],
+          "UserData" : { "Fn::Base64" : {"Fn::Join" : ["", [
+      "#!/bin/bash \n",
+      "sudo yum install httpd -y \n",
+      "sudo service httpd start \n",
+      "cd /var/www/html \n",
+      "sudo wget http://conteudo.concretesolutions.com.br/devops-on-beer-sp-1312 \n",
+      "nome=`sudo ls` \n",
+      "sudo mv $nome index.html \n",
+      "sudo chmod 755 index.html \n"
+    ]]}}
+      }
+    }
+  },
+  "Outputs" : {
+    "InstanceId" : {
+      "Description" : "InstanceId of the newly created EC2 instance",
+      "Value" : { "Ref" : "Ec2Instance" }
+    },
+    "AZ" : {
+      "Description" : "Availability Zone of the newly created EC2 instance",
+      "Value" : { "Fn::GetAtt" : [ "Ec2Instance", "AvailabilityZone" ] }
+    },
+    "PublicIP" : {
+      "Description" : "Public IP address of the newly created EC2 instance",
+      "Value" : { "Fn::GetAtt" : [ "Ec2Instance", "PublicIp" ] }
+    },
+    "PrivateIP" : {
+      "Description" : "Private IP address of the newly created EC2 instance",
+      "Value" : { "Fn::GetAtt" : [ "Ec2Instance", "PrivateIp" ] }
+    }
+  }
+}
