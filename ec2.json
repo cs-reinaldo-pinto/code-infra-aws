@@ -7,15 +7,13 @@
       "Type": "String",
       "Default": "reinaldosouza"
     },
-
     "SecurityGroup": {
     "Type": "String",
-    "Default" : "sg-5099bc2d"
+    "Default" : "sg-69d0761c"
     },
     "SubnetId": {
     "Type": "String",
-    "Default": "subnet-7e64f553"
-
+    "Default": "subnet-accc1b83"
     }
   },
   "Mappings" :
@@ -52,13 +50,16 @@
         }],
           "UserData" : { "Fn::Base64" : {"Fn::Join" : ["", [
       "#!/bin/bash \n",
-      "sudo yum install httpd wget -y \n",
-      "sudo service httpd start \n",
-      "cd /var/www/html \n",
-      "sudo wget http://conteudo.concretesolutions.com.br/devops-on-beer-sp-1312 \n",
-      "nome=`sudo ls` \n",
-      "sudo mv $nome index.html \n",
-      "sudo chmod 755 index.html \n"
+      "sudo yum install python git -y \n",
+      "sudo mkdir /opt/app \n",
+      "cd /opt/app \n",
+      "sudo git clone https://github.com/flaviogeru/devops-challenge.git -b master \n",
+      "cd devops-challenge/app \n",
+      "sudo bash -c 'echo export GERU_PASS=10bdfabd54f47a3f4e6b6b9e3f0061b3 > /etc/profile.d/geru_env.sh' \n",
+      "sudo pip install -r requirements.txt \n",
+      "sudo wget https://gist.githubusercontent.com/reinaldo-pinto/173163cabc805f6ee2b014ab4095a2af/raw/8aa93abe0b43f00fb584a43e0fa7e4ca54001693/env_restart.sh \n",
+      "sudo chmod a+x env_restart.sh \n",
+      "sudo bash ./env_restart.sh \n"
     ]]}}
       }
     }
@@ -75,10 +76,6 @@
     "PublicIP" : {
       "Description" : "Public IP address of the newly created EC2 instance",
       "Value" : { "Fn::GetAtt" : [ "Ec2Instance", "PublicIp" ] }
-    },
-    "PrivateIP" : {
-      "Description" : "Private IP address of the newly created EC2 instance",
-      "Value" : { "Fn::GetAtt" : [ "Ec2Instance", "PrivateIp" ] }
     }
   }
 }
